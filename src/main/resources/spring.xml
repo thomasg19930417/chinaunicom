@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+         http://www.springframework.org/schema/aop 
+         http://www.springframework.org/schema/aop/spring-aop.xsd
+          http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
+	<!-- 扫描的包 -->
+	<context:component-scan base-package="com.asainfo"></context:component-scan>
+	<!-- 读取配置文件 -->
+	<context:property-placeholder location="classpath:db.properties" />
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="initialSize" value="${jdbc.initialSize}"></property>
+		<property name="maxTotal" value="${jdbc.maxTotal}"></property>
+		<property name="minIdle" value="${jdbc.minIdle}"></property>
+		<property name="defaultAutoCommit" value="true" />
+	</bean>
+	<bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="typeAliasesPackage" value="com.asainfo.pojo" />
+		<property name="mapperLocations" value="classpath:mapper/*.xml" />
+		<property name="configLocation" value="classpath:mybatis.xml"></property>
+	</bean>
+	<!-- 接口的代理实现类的bean的配置 默认id为对应映射接口名的首字母小写 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.asainfo.mapper"></property>
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryBean"></property>
+	</bean>
+
+
+	<!--spring整合mybatis 事物 -->
+
+
+	<!-- 配置事物管理器 -->
+	<bean id="txManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 启用spring 事物注解 -->
+	<tx:annotation-driven transaction-manager="txManager"></tx:annotation-driven>
+
+
+	<!-- ======================spring 调度============================== -->
+	<!-- 要执行的任务类 -->
+	<bean id="quartzJob01" class="com.asainfo.schedu.ErrorScheduing"></bean>
+	<bean id="sendUser" class="com.asainfo.schedu.CalculationActiveSend"></bean>
+	<!--配置要触发的方法 -->
+	<bean id="jobDetail_1"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="quartzJob01" />
+		</property>
+		<property name="targetMethod">
+			<value>before</value>
+		</property>
+	</bean>
+	<bean id="jobDetail_2"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="sendUser" />
+		</property>
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+	</bean>
+	
+	
+	
+	
+	<!--触发器 -->
+	<bean id="cronTrigger_001"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="jobDetail_1" />
+		</property>
+		<!-- 每天七点触发 -->
+		<property name="cronExpression">
+			<value>0 0 01 * * ? *</value>
+		</property>
+	</bean>
+	<bean id="cronTrigger_002"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="jobDetail_2" />
+		</property>
+		<!-- 每天七点触发 -->
+		<property name="cronExpression">
+			<value>00 10 11 * * ? *</value>
+		</property>
+	</bean>
+	
+	
+	<bean id="schedulerFactoryBean"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="cronTrigger_001" />
+				<ref bean="cronTrigger_002" />
+			</list>
+		</property>
+	</bean>
+
+
+	<!-- <bean id="schedulerMy"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	</bean> -->
+	
+
+</beans>

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="../css/bootstrap.css" />
+<link rel="stylesheet" type="text/css"
+	href="../css/bootstrap-responsive.css" />
+<link rel="stylesheet" type="text/css" href="../css/style.css" />
+<link rel="stylesheet" type="text/css"
+	href="../jquery-ui-multiselect/css/jquery.multiselect.css" />
+<link rel="stylesheet" type="text/css"
+	href="../jquery-ui-multiselect/css/jquery.multiselect.filter.css" />
+<link rel="stylesheet" type="text/css"
+	href="../jquery-ui-multiselect/css/jquery-ui.css" />
+<link rel="stylesheet" type="text/css"
+	href="../jquery-ui-multiselect/assets/style.css" />
+<link rel="stylesheet" type="text/css"
+	href="../jquery-ui-multiselect/assets/prettify.css" />
+<script type="text/javascript" src="../js/jquery.js"></script>
+<script type="text/javascript" src="../Js/jquery.sorted.js"></script>
+<script type="text/javascript" src="../js/bootstrap.js"></script>
+<script type="text/javascript" src="../js/ckform.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
+<script type="text/javascript"
+	src="../jquery-ui-multiselect/assets/prettify.js"></script>
+<script type="text/javascript"
+	src="../jquery-ui-multiselect/src/jquery-ui.min.js"></script>
+<script type="text/javascript"
+	src="../jquery-ui-multiselect/src/jquery.multiselect.js"></script>
+<script type="text/javascript"
+	src="../jquery-ui-multiselect/src/jquery.multiselect.filter.js"></script>
+
+<style type="text/css">
+body {
+	background: #ECF5FF;
+	padding-bottom: 40px;
+	padding-top: 8px;
+	padding-left: 10px;
+	font-family: "Microsoft YaHei" ；
+}
+
+.sidebar-nav {
+	padding: 9px 0;
+}
+
+.table {
+	padding-top: 1px;
+	padding-left: 1px;
+}
+
+@media ( max-width : 980px) {
+	/* Enable use of floated navbar text */
+	.navbar-text.pull-right {
+		float: none;
+		padding-left: 5px;
+		padding-right: 5px;
+	}
+}
+
+.btn-group {
+	margin-left: 40%;
+}
+
+.dialog-mask-own {
+	position: fixed;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	background: #000;
+	z-index: 10;
+	filter: alpha(opacity = 50);
+	opacity: .5;
+	display: block;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+</style>
+<script type="text/javascript">
+
+	$(document).ready(function (){
+	 	$.post("/chinaunicom/query/getUserProp", {
+			"type" : "send_user_type"
+		}, function(data) {
+			if(data != "" || data != null){
+				var arraydata = JSON.stringify(data.data);
+				$(eval("("+arraydata+")")).each(function(){
+					$("#userType").append("<option value='" + this["dim_apaas_code.col_code"] + "'>" + this["dim_apaas_code.col_content"] + "</option>");
+				})
+			}
+			$(".userType").multiselect({
+		        noneSelectedText: "===请选择===",
+		        checkAllText: "全选",
+		        uncheckAllText: '全不选',
+		        selectedList:2
+		  }); 
+		}, "json");
+		
+		$.post("/chinaunicom/query/getUserProp", {
+			"type" : "nettype"
+		}, function(data) {
+			if(data != "" || data != null){
+				var arraydata = JSON.stringify(data.data);
+				$(eval("("+arraydata+")")).each(function(){
+					$("#nettype").append("<option value='" + this["dim_apaas_code.col_code"] + "'>" + this["dim_apaas_code.col_content"] + "</option>");
+				})
+			}
+			$(".nettype").multiselect({
+		        noneSelectedText: "===请选择===",
+		        checkAllText: "全选",
+		        uncheckAllText: '全不选',
+		        selectedList:3
+		  }); 
+		}, "json");
+		
+		$.post("/chinaunicom/query/getUserProp", {
+			"type" : "paytype"
+		}, function(data) {
+			var arraydata = JSON.stringify(data.data);
+			if(data != "" || data != null){
+				var arraydata = JSON.stringify(data.data);
+				$(eval("("+arraydata+")")).each(function(){
+					$("#paytype").append("<option value='" + this["dim_apaas_code.col_code"] + "'>" + this["dim_apaas_code.col_content"] + "</option>");
+				})
+			}
+			$(".paytype").multiselect({
+		        noneSelectedText: "==请选择==",
+		        checkAllText: "全选",
+		        uncheckAllText: '全不选',
+		        selectedList:2
+		  }); 
+		}, "json");
+	})
+</script>
+
+
+</head>
+<body>
+	<div>
+		<form id="queryForm">
+			<!-- =============-->
+			<div>
+				<span>用户属性(不勾选表示全选):</span>
+				<table class="table">
+					<tr>
+						<td><label> 发送用户类型:&nbsp;&nbsp;&nbsp; </label></td>
+						<td><select class="userType" id="userType" name="userType"
+							multiple="multiple" style="display: none;">
+								<!--<option value="0">当月新增</option>
+							<option value="1">一个月留存</option>
+							<option value="2">两个月留存</option>
+							<option value="3">三个月留存</option>
+							<option value="4">一个月流失</option>
+							<option value="5">两个月流失</option>
+							<option value="6">三个月流失</option> -->
+						</select></td>
+						<td><label>&nbsp;&nbsp;&nbsp; 网别:&nbsp;&nbsp;&nbsp;
+						</label></td>
+						<td><select class="nettype" id="nettype" name="nettype"
+							multiple="multiple" style="display: none;">
+								<!-- <option value="01">2G</option>
+								<option value="02">3G</option>
+								<option value="03">固定电话</option>
+								<option value="04">宽带（ADSL）</option>
+								<option value="05">宽带（LAN）</option>
+								<option value="06">小灵通</option>
+								<option value="07">WLAN业务</option>
+								<option value="08">融合</option>
+								<option value="09">集团</option>
+								<option value="10">上网卡</option>
+								<option value="11">4G</option> -->
+						</select></td>
+						<td><label>&nbsp;&nbsp;&nbsp; 付费类型:&nbsp;&nbsp;&nbsp;
+						</label></td>
+						<td><select class="paytype" id="paytype" name="paytype"
+							multiple="multiple" style="display: none;">
+								<!-- <option value="0">不区分付费类型(只针对于小灵通)</option>
+								<option value="1">预付费</option>
+								<option value="2">后付费</option> -->
+						</select></td>
+					</tr>
+
+					</tr>
+				</table>
+			</div>
+			<!-- =============-->
+			<div>
+				<span>省份选择(不勾选表示全选):</span>
+				<table class="table">
+					<table class="prov"
+						style="width: 80%; border-collapse: separate; border-spacing: 10px;">
+						<tr>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="100"> 北京
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="200"> 广东
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="210"> 上海
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="220"> 天津
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="230"> 重庆
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="240"> 辽宁
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="250"> 江苏
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="270"> 湖北
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="280"> 四川
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="290"> 陕西
+							</label></td>
+						</tr>
+						<tr>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="311"> 河北
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="351"> 山西
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="371"> 河南
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="431"> 吉林
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="451"> 黑龙江
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="471"> 内蒙古
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="531"> 山东
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="551"> 安徽
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="571"> 浙江
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="591"> 福建
+							</label></td>
+						</tr>
+						<tr>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="731"> 湖南
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="771"> 广西
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="791"> 江西
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="851"> 贵州
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="871"> 云南
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="891"> 西藏
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="898"> 海南
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="931"> 甘肃
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="951"> 宁夏
+							</label></td>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="971"> 青海
+							</label></td>
+						</tr>
+						<tr>
+							<td><label> <input name="provincecode"
+									type="checkbox" value="991"> 新疆
+							</label></td>
+						</tr>
+					</table>
+					</div>
+					<!-- =============-->
+					<div>
+						<span>群发属性:</span>
+						<table class="table">
+							<tr>
+								<td><label> 群发类型: </label></td>
+								<td><select name="sendType">
+										<option value="noselect">未选择</option>
+										<option value="usable_num1">EDM群发</option>
+										<option value="usable_num2">日常运营</option>
+										<option value="usable_num3">市场升级</option>
+								</select></td>
+								<td><label> 数据量: </label></td>
+								<td><label> <input class="form-control" name="num"
+										type="text" placeholder="请输入要提取的数据量">
+								</label></td>
+								<td><label> 活动名称:</label></td>
+								<td><label> <input class="form-control"
+										name="topic" type="text" placeholder="请输入活动名称">
+								</label></td>
+								<td><label> 需求人:</label></td>
+								<td><label> <input class="form-control" name="name"
+										type="text" placeholder="请输入需求人">
+								</label></td>
+							</tr>
+							<tr>
+								<td><label> 过滤标签: </label></td>
+								<td><label> <input class="form-control"
+										name="nocontain" type="text" placeholder="请输入要过滤的标签">
+								</label></td>
+						</table>
+					</div>
+					<!--=============-->
+					<div class="btn-group" role="group" aria-label="...">
+						<td>
+							<input onclick="query()" class="btn btn-primary" type="button" value="提交">
+							&nbsp;&nbsp;
+							<button type="button" class="btn btn-success" name="backid"
+								id="backid" onclick="resets()">重置</button>
+						</td>
+					</div>
+					</form>
+					</div>
+
+<!-- =============================  -->
+<script>
+		var str = "";
+		var datacode = "";
+		var sendType = "";
+		function query() {
+			 $(".dialog-mask-own").css("display", "block");
+			 $.post("/chinaunicom/query/query",$("#queryForm").serialize(),
+		function(data) {
+			if (!data.status) {
+				$(".dialog-mask-own")
+						.css("display", "none");
+				alert(data.msg);
+			} else {
+				datacode = data.data.datacode;
+				sendType = data.data.type;
+				taskid = data.data.taskid;
+				$(".dialog-mask-own")
+						.css("display", "none");
+				$(".modal-footer").html('<button  type="button" class="btn btn-default" onclick="getProv()">确认</button><button  type="button" class="btn btn-primary" onclick="delTask()">取消</button>');
+				$('.modal-body').html("实际数据量" + data.msg);
+				$("#queryForm")[0].reset();
+				
+				$('#myModal').modal('show');
+			}
+
+		}, "json"); 
+		}
+
+		function getProv() {
+			$('#myModal').modal('hide');
+			$(".dialog-mask-own").css("display", "block");
+			$.post("/chinaunicom/query/getProv", {
+				"datacode" : datacode,
+				"type" : sendType,
+				"taskid" : taskid
+			}, function(data) {
+				$(".dialog-mask-own").css("display", "none");
+				$(".modal-footer").html(
+						'<button class="btn btn-default">确定</button>');
+				$('.modal-body').html(data.msg);
+				$('#myModal').modal({
+					  keyboard: false,
+					  backdrop:static,
+					}); 
+				$('#myModal').modal('show');
+			}, "json");
+		}
+
+		function delTask() {
+			$('#myModal').modal('hide');
+			$(".dialog-mask-own").css("display", "block");
+			$.post("/chinaunicom/query/delTask", {
+				"datacode" : datacode,
+				"taskid" : taskid
+			}, function(data) {
+				$(".modal-footer").html(
+						'<button class="btn btn-default" data-dismiss="modal">确定</button>');
+				$('.modal-body').html(data.msg);
+				$(".dialog-mask-own").css("display", "none");
+				$('#myModal').modal('show');
+			}, "json");
+		}
+		
+		
+		function resets(){
+			$("#queryForm")[0].reset();
+		}
+		
+	</script>
+
+<div class="dialog-mask-own" style="display: none;">
+	<div style="margin: 20% 45%">
+		<img src="../images/load02.gif" class="radius-circle" height="50"
+			alt="" />
+	</div>
+</div>
+<!--  =================-->
+
+<!-- Modal -->
+<div class="modal fade" id="myModal"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">提取结果</h4>
+      </div>
+      <div class="modal-body">
+                本次提取的实际数据：11111
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+        <button type="button" class="btn btn-primary">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+</body>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asainfo.mapper.ScheduMapper">
+ 
+ 	<insert id="save" parameterType="ScheduleJob">
+ 		insert into schedu(jobName,jobGroup,jobStatus,cronExpression,command,triggerName) 
+ 		 values(#{jobName},#{jobGroup},#{jobStatus},#{cronExpression},#{command},#{triggerName})
+ 	</insert>
+ 	
+ 	<select id="getlistSchedu" resultType="ScheduleJob">
+ 	    select * from schedu where jobStatus='1'
+ 	</select>
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asainfo.mapper.TaskMapper">
+	<select id="getTaskByPage" resultType="Task">
+		select * from Task
+		<where>
+			<if test="condition != null and condition != '' ">
+				topic like concat('%', #{condition}, '%')
+			</if>
+			and status != 0
+		</where>
+		order by submit_time desc limit #{currentPage},#{pageNum}
+	</select>
+	<select id="getcount" resultType="Integer">
+		select count(*) from Task
+		<where>
+			<if test="condition != null and condition != '' ">
+				topic like concat('%', #{condition}, '%')
+			</if>
+			and status !=0
+		</where>
+	</select>
+
+	<insert id="createTask" parameterType="Task">
+		insert into task(taskid,username,status,submit_time,topic,type)
+		values(#{taskid},#{username},#{status},#{submit_time},#{topic},#{type})
+	</insert>
+
+	<insert id="createTask01" parameterType="Task">
+		insert into
+		task(taskid,username,status,submit_time,finish_time,file_path,datacode,file_linenum,
+		topic,type)
+		values(#{taskid},#{username},#{status},#{submit_time},#{finish_time},#{file_path},#{datacode},
+		#{file_linenum},#{topic},#{type})
+	</insert>
+
+
+	<update id="updateTask" parameterType="Task">
+		UPDATE task set finish_time=#{finish_time},file_path=#{file_path},
+		datacode=#{datacode},file_linenum=#{file_linenum},status=#{status}
+		where taskid = #{taskid}
+	</update>
+
+	<update id="updateTaskFinshTime" parameterType="Task">
+		UPDATE task set finish_time=#{finish_time} where taskid = #{taskid}
+	</update>
+	<insert id="saveProv" parameterType="Prov">
+		insert into provinceinfo values(#{taskid},#{prov})
+	</insert>
+
+	<select id="getprov" resultType="Prov">
+		select * from provinceinfo where taskid = #{taskid}
+	</select>
+
+	<select id="getTaskById" parameterType="Integer" resultType="Task">
+		select * from task where taskid=#{taskid}
+	</select>
+
+
+	<select id="getLableByName" parameterType="String" resultType="Label">
+		select * from label where labelname =#{lab}
+	</select>
+	<insert id="save">
+		insert into labeldacode(datacode,labelId) values(#{datacode},#{labelId})
+	</insert>
+
+	<insert id="createLabel" parameterType="Label">
+		insert into
+		label(labelname) values(#{labelname})
+	</insert>
+	<select id="getDatacode" resultType="String">
+		select datacode from labeldacode where labelId in
+		( select id from label where labelname in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		) group by datacode
+	</select>
+
+	<delete id="delTask" parameterType="Task">
+		delete from task where taskid
+		= #{taskid}
+	</delete>
+
+	<select id="getLabel" parameterType="Task"  resultType="Label">
+		select * from label where id in
+		(select labelId from labeldacode where datacode=
+		(select datacode from task where taskid=#{taskid}))
+	</select>
+	
+	<select id="getDatacodes" resultType="Task">
+
+		SELECT
+	   t1.*
+        FROM
+	   (select * from task where DATE_FORMAT(submit_time,'%Y%m%d%H%i%S') ='20170315164149' and status=2 )t1
+         LEFT JOIN sendUser t2 ON t1.taskid = t2.taskid
+        WHERE
+	   t2.taskid IS NULL
+	</select>
+
+	<select id="saveSend" parameterType="SendUser">
+	 	insert into senduser(taskid,type,content) values(#{taskid},#{type},#{content})
+	</select>
+	
+	<select id="getSend" parameterType="Task" resultType="SendUser">
+	   select * from senduser where taskid = #{taskid}
+	</select>
+</mapper>

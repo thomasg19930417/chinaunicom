@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asainfo.mapper.PhoneMapper">
+	
+	<select id="getPhone" parameterType="Phone" resultType="Phone">
+		select mobile,source,class as classs,type,effective_dt from dw_black_user
+		where mobile=#{mobile}
+	</select>
+	
+	<update id="modifyPhone" parameterType="Phone">
+		update dw_black_user set
+		source=#{source},class=#{classs},type=#{type},effective_dt=#{effective_dt}
+		where mobile=#{mobile}
+	</update>
+	
+	<insert id="addPhone" parameterType="Phone">
+		insert into dw_black_user(mobile,source,class,type,effective_dt)
+		values(#{mobile},#{source},#{classs},#{type},#{effective_dt})
+	</insert>
+	
+	<delete id="delPhone" parameterType="Phone">
+		delete from dw_black_user where mobile=#{mobile}
+	</delete>
+	
+	<insert id="phoneMapper" parameterType="java.util.List">
+		insert into dw_black_user(mobile,source,class,type,effective_dt)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.mobile},#{item.source},#{item.class},#{item.type},#{item.effective_dt})
+		</foreach>
+	</insert>
+</mapper>
