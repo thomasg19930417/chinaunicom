@@ -11,7 +11,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--版本号共有部分抽取使用 -->
 		<spring.version>4.1.6.RELEASE</spring.version>
-		<mybatis.version>3.3.0</mybatis.version>
+		<mybatis.version>3.5.6</mybatis.version>
 		<mybatis-spring.version>1.2.3</mybatis-spring.version>
 		<log4j.version>2.3</log4j.version>
 		<junit.version>4.12</junit.version>
